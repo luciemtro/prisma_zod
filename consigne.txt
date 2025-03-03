@@ -1,0 +1,58 @@
+### **📌 1️⃣ Gestion de bibliothèque 📚**  
+➡️ **Objectif** : Gérer des livres, des auteurs, des genres et des emprunts.  
+
+🔹 **Livres** : titre, description, date de publication, nombre d’exemplaires disponibles.  
+🔹 **Auteurs** : nom, biographie, date de naissance.  
+🔹 **Genres** : (ex: Science-fiction, Romance, Thriller).  
+🔹 **Emprunts** : chaque livre peut être emprunté et doit être retourné avant une date limite.  
+
+---
+
+### **📌 2️⃣ Gestion d'un cinéma 🎬**  
+➡️ **Objectif** : Organiser des films, des horaires de projection et des salles.  
+
+🔹 **Films** : titre, durée, genre, synopsis.  
+🔹 **Salles** : numéro, capacité (combien de places).  
+🔹 **Séances** : film projeté, date, heure, salle attribuée.  
+🔹 **Réservations** (optionnel) : combien de places sont déjà prises.  
+
+---
+
+### **📌 3️⃣ Gestion d’un parc zoologique 🦁**  
+➡️ **Objectif** : Gérer des animaux, leurs enclos, et les repas.  
+
+🔹 **Animaux** : nom, espèce, date de naissance, enclos attribué.  
+🔹 **Enclos** : nom (ex: Savane africaine), type (aquatique, désertique...), capacité maximale.  
+🔹 **Repas** : type de nourriture, quantité, fréquence (quotidien, hebdomadaire).  
+🔹 **Soins** (optionnel) : suivi médical, dernier contrôle vétérinaire.  
+
+---
+
+### **📌 4️⃣ Gestion de Tournois d’échecs ♟️**  
+➡️ **Objectif** : Organiser des tournois, des joueurs, et leurs parties.  
+
+🔹 **Joueurs** : nom, classement Elo, nationalité.  
+🔹 **Tournois** : nom, lieu, date de début et fin.  
+🔹 **Parties** : joueur blanc, joueur noir, gagnant, nombre de coups joués.  
+🔹 **Classements** : résultat final du tournoi.  
+
+---
+
+### **📌 5️⃣ Gestion d’une station météo 🌦️**  
+➡️ **Objectif** : Suivre des données météo enregistrées chaque jour.  
+
+🔹 **Stations météo** : nom, emplacement, altitude.  
+🔹 **Relevés** : température, humidité, pression, date et heure du relevé.  
+🔹 **Types d’alertes** : tempête, canicule, gel, etc.  
+
+---
+
+### **📌 6️⃣ Gestion de livraison de colis 📦**  
+➡️ **Objectif** : Suivre des colis, leurs trajets, et leurs statuts.  
+
+🔹 **Colis** : numéro de suivi, poids, dimensions.  
+🔹 **Destinations** : adresse d'expédition et de réception.  
+🔹 **Étapes du trajet** : entrepôts ou villes traversés, date et heure du passage.  
+🔹 **Statuts** : en cours de traitement, en transit, livré.  
+
+---
