@@ -306,13 +306,6 @@ model Alert{
 // 🔹 **Route Steps**: warehouses or cities the package passes through, date and time of transit.  
 // 🔹 **Statuses**: processing, in transit, delivered.  
 //--------------------------------
-// 📌 6️⃣ Suivi de Livraison de Colis 📦
-// ➡️ Objectif : Suivre les colis, leurs trajets et leurs statuts.
-
-// 🔹 Colis : numéro de suivi, poids, dimensions.
-// 🔹 Destinations : adresses d'expédition et de réception.
-// 🔹 Étapes du trajet : entrepôts ou villes traversés, date et heure du passage.
-// 🔹 Statuts : en cours de traitement, en transit, livré.
 
 
 model Package{
