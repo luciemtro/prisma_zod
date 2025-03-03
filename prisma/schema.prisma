@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,131 +8,374 @@ datasource db {
 }
 
 //--------------------------------
-// 📌 1️⃣ Gestion de bibliothèque 📚
-// ➡️ **Objectif** : Gérer des livres, des auteurs, des genres et des emprunts.  
+// 📌 1️⃣ Library Management 📚
+// ➡️ **Objective**: Manage books, authors, genres, and loans.  
 
-// 🔹 **Livres** : titre, description, date de publication, nombre d’exemplaires disponibles.  
-// 🔹 **Auteurs** : nom, biographie, date de naissance.  
-// 🔹 **Genres** : (ex: Science-fiction, Romance, Thriller).  
-// 🔹 **Emprunts** : chaque livre peut être emprunté et doit être retourné avant une date limite.  
+// 🔹 **Books**: title, description, publication date, number of available copies.  
+// 🔹 **Authors**: name, biography, date of birth.  
+// 🔹 **Genres**: (e.g., Science Fiction, Romance, Thriller).  
+// 🔹 **Loans**: each book can be borrowed and must be returned before a due date.  
 //--------------------------------
 
-model Livre{
-  id String @id @default(uuid())
-  title String @unique
+model Book {
+  id                String @id @default(uuid())
+  title             String @unique
+  description       String
+  publicationDate   DateTime
+  availableCopies   Int
+  author            Author @relation(fields: [authorId], references: [id])
+  authorId          String
+  genre             Genre @relation(fields: [genreId], references: [id])
+  genreId           String
+  loans             Loan[]
+}
+
+model Author {
+  id            String @id @default(uuid())
+  name          String @unique
+  biography     String
+  birthDate     DateTime
+  books         Book[]
+}
+
+model Genre {
+  id      String @id @default(uuid())
+  name    String @unique
+  books   Book[]
+}
+
+model Loan {
+  id            String @id @default(uuid())
+  loanDate      DateTime
+  returnDueDate DateTime
+  book          Book @relation(fields: [bookId], references: [id])
+  bookId        String
+}
+
+//--------------------------------
+// 📌 2️⃣ Cinema Management 🎬  
+// ➡️ **Objective**: Manage movies, showtimes, and theaters.  
+
+// 🔹 **Movies**: title, duration, genre, synopsis.  
+// 🔹 **Theaters**: number, capacity.  
+// 🔹 **Screenings**: movie, date, time, assigned theater.  
+// 🔹 **Reservations**: track the number of reserved seats.  
+//--------------------------------
+
+model Movie {
+  id           String  @id @default(uuid())
+  title        String  @unique
+  synopsis     String
+  durationMin  Int
+  genre        MovieGenre @relation(fields: [genreId], references: [id])
+  genreId      String
+  screenings   Screening[]
+}
+
+model MovieGenre {
+  id     String @id @default(uuid())
+  name   String @unique
+  movies Movie[]
+}
+
+model Theater {
+  id        String @id @default(uuid())
+  number    Int    @unique
+  capacity  Int
+  screenings Screening[]
+}
+
+model Screening {
+  id          String  @id @default(uuid())
+  dateTime    DateTime
+  movie       Movie   @relation(fields: [movieId], references: [id])
+  movieId     String
+  theater     Theater @relation(fields: [theaterId], references: [id])
+  theaterId   String
+  reservations ScreeningReservation[]
+}
+
+model ScreeningReservation {
+  id          String  @id @default(uuid())
+  screening   Screening @relation(fields: [screeningId], references: [id])
+  screeningId String
+  seatCount   Int
+  clientName  String?
+}
+
+//--------------------------------
+// 📌 3️⃣ Zoo Management 🦁
+// ➡️ **Objective**: Manage animals, enclosures, and meals.  
+
+// 🔹 **Animals**: name, species, birth date, assigned enclosure.  
+// 🔹 **Enclosures**: name (e.g., African Savanna), type (aquatic, desert, etc.), maximum capacity.  
+// 🔹 **Meals**: food type, quantity, frequency (daily, weekly).  
+// 🔹 **Medical Records** (optional): vet care, last check-up.  
+//--------------------------------
+
+model Animal {
+  id         String @id @default(uuid())
+  name       String @unique
+  birthDate  DateTime
+  species    Species @relation(fields: [speciesId], references: [id])
+  speciesId  String
+  enclosure  Enclosure @relation(fields: [enclosureId], references: [id])
+  enclosureId String
+  medicalRecords MedicalRecord[]
+}
+
+model Species {
+  id      String @id @default(uuid())
+  name    String @unique
+  animals Animal[]
+  meals   Meal[]
+}
+
+model Enclosure {
+  id           String @id @default(uuid())
+  name         String @unique
+  capacity     Int
+  type         EnclosureType @relation(fields: [enclosureTypeId], references: [id])
+  enclosureTypeId String
+  animals      Animal[]
+}
+
+model EnclosureType {
+  id       String @id @default(uuid())
+  name     String @unique
+  enclosures Enclosure[]
+}
+
+model Meal {
+  id             String         @id @default(uuid())
+  quantity       Int
+  foodType       FoodType       @relation(fields:[foodTypeId], references: [id])
+  foodTypeId     String
+  frequency      MealFrequency
+  species        Species @relation(fields: [speciesId], references: [id])
+  speciesId      String
+}
+
+enum MealFrequency {
+  DAILY
+  WEEKLY
+}
+
+model FoodType {
+  id      String @id @default(uuid())
+  name    String @unique
+  meals   Meal[]
+}
+
+model MedicalRecord {
+  id          String  @id @default(uuid())
   description String
-  datePublication DateTime
-  exemplairesDispo Int
-  auteur Auteur @relation(fields: [auteurId], references: [id])
-  auteurId String
-  genre Genre @relation(fields: [genreId], references: [id])
-  genreId String
-  emprunts Emprunt[]
+  veterinarian Veterinarian @relation(fields: [veterinarianId], references: [id])
+  veterinarianId String
+  date        DateTime
+  animal      Animal @relation(fields: [animalId], references: [id])
+  animalId    String
 }
 
-model Auteur{
+model Veterinarian {
+  id               String @id @default(uuid())
+  name             String @unique
+  medicalRecords   MedicalRecord[]
+}
+
+//--------------------------------
+// 📌 4️⃣ Chess Tournament Management ♟️
+// ➡️ **Objective**: Organize tournaments, players, and matches.  
+
+// 🔹 **Players**: name, Elo rating, nationality.  
+// 🔹 **Tournaments**: name, location, start and end date.  
+// 🔹 **Matches**: white player, black player, winner, number of moves.  
+// 🔹 **Standings**: final tournament rankings.  
+//--------------------------------
+
+model Player{
   id String @id @default(uuid())
-  nom String @unique
-  biographie String
-  dateNaissance DateTime
-  livres Livre[]
+  name String
+  nationality Nationality @relation(fields: [nationalityId], references: [id])
+  nationalityId String
+  eloRating Int
+  matchesWhite Match[] @relation("WhiteMatches")
+  matchesBlack Match[] @relation("BlackMatches")
+  matchesWinner Match[] @relation("WinnerMatches")
+  Standing TournamentStanding[]
 }
 
-model Genre{
+model Nationality{
   id String @id @default(uuid())
-  nom String @unique
-  livres Livre[]
+  name String @unique
+  code String @unique
+  players Player[]
 }
-
-model Emprunt{
+model LocationTournament{
   id String @id @default(uuid())
-  dateEmprunt    DateTime 
-  dateRetourPrevu DateTime 
-  livre Livre @relation(fields: [livreId], references: [id])
-  livreId String
+  name String @unique
+  code String @unique
+  tournament Tournament[]
 }
 
-//--------------------------------
-// 📌 2️⃣ Gestion d'un cinéma 🎬  
-// ➡️ **Objectif** : Organiser des films, des horaires de projection et des salles.  
-
-// 🔹 **Films** : titre, durée, genre, synopsis.  
-// 🔹 **Salles** : numéro, capacité (combien de places).  
-// 🔹 **Séances** : film projeté, date, heure, salle attribuée.  
-// 🔹 **Réservations** (optionnel) : combien de places sont déjà prises.  
-//--------------------------------
-
-model Film{
+model Tournament{
   id String @id @default(uuid())
-  title String @unique
-  synopsis String
-  dureeMinutes Int
-  genreFilm GenreFilm @relation(fields: [genreId], references: [id])
-  genreId String
-  seances Seance[]
+  name String @unique
+  dateStart DateTime
+  dateEnd DateTime
+  matches Match[]
+  location LocationTournament @relation(fields:[locationId], references: [id])
+  locationId String
+  Standing TournamentStanding[]
 }
 
-model GenreFilm{
+model Match{
   id String @id @default(uuid())
-  nom String @unique
-  films Film[]
+  tournament Tournament @relation(fields:[tournamentId], references: [id])
+  tournamentId String
+  blackPlayer   Player @relation("BlackMatches", fields:[blackPlayerId], references: [id])
+  blackPlayerId String
+  whitePlayer Player @relation("WhiteMatches", fields:[whitePlayerId], references: [id])
+  whitePlayerId String 
+  winnerPlayer Player? @relation("WinnerMatches", fields:[winnerPlayerId], references: [id])
+  winnerPlayerId String? 
+  numberMoves Int
+  scoreWhite Float @default(0)
+  scoreBlack Float @default(0)
 }
 
-model Salle{
+
+model TournamentStanding{
   id String @id @default(uuid())
-  numero Int @unique
-  capacite Int
-  seances Seance[]
+  tournament Tournament @relation(fields:[tournamentId], references: [id])
+  tournamentId String
+  player Player @relation(fields:[playerId], references: [id])
+  playerId String
+  rank Int @default(0)
+  points Float @default(0)
 }
 
-model Seance{
+
+//--------------------------------
+// 📌 5️⃣ Weather Station Management 🌦️
+// ➡️ **Objective**: Track daily recorded weather data.  
+
+// 🔹 **Weather Stations**: name, location, altitude.  
+// 🔹 **Readings**: temperature, humidity, pressure, date and time of measurement.  
+// 🔹 **Alerts**: storm, heatwave, frost, etc.  
+//--------------------------------
+
+model WeatherStation{
   id String @id @default(uuid())
-  dateHeure DateTime
-  film Film @relation(fields: [filmId], references : [id])
-  filmId String
-  salle Salle @relation(fields: [salleId], references: [id])
-  salleId String
+  name String @unique
+  state String?
+  country String
+  city String
+  altitude Int
+  latitude Float
+  longitude Float
+  reading Reading[]
 }
 
-//--------------------------------
-// 📌 3️⃣ Gestion d’un parc zoologique 🦁
-// ➡️ **Objectif** : Gérer des animaux, leurs enclos, et les repas.  
-
-// 🔹 **Animaux** : nom, espèce, date de naissance, enclos attribué.  
-// 🔹 **Enclos** : nom (ex: Savane africaine), type (aquatique, désertique...), capacité maximale.  
-// 🔹 **Repas** : type de nourriture, quantité, fréquence (quotidien, hebdomadaire).  
-// 🔹 **Soins** (optionnel) : suivi médical, dernier contrôle vétérinaire.  
-//--------------------------------
-
-//--------------------------------
-// 📌 4️⃣ Gestion de Tournois d’échecs ♟️
-// ➡️ **Objectif** : Organiser des tournois, des joueurs, et leurs parties.  
-
-// 🔹 **Joueurs** : nom, classement Elo, nationalité.  
-// 🔹 **Tournois** : nom, lieu, date de début et fin.  
-// 🔹 **Parties** : joueur blanc, joueur noir, gagnant, nombre de coups joués.  
-// 🔹 **Classements** : résultat final du tournoi.  
-//--------------------------------
+model Reading{
+  id String @id @default(uuid())
+  temperature Float
+  humidity Int
+  pressure Float
+  dateMeasurement DateTime
+  weatherStation WeatherStation @relation(fields: [weatherStationId], references: [id])
+  weatherStationId String
+  alerts Alert? @relation(fields:[alertId], references: [id])
+  alertId String?
+}
 
 
-//--------------------------------
-// 📌 5️⃣ Gestion d’une station météo 🌦️
-// ➡️ **Objectif** : Suivre des données météo enregistrées chaque jour.  
-
-// 🔹 **Stations météo** : nom, emplacement, altitude.  
-// 🔹 **Relevés** : température, humidité, pression, date et heure du relevé.  
-// 🔹 **Types d’alertes** : tempête, canicule, gel, etc.  
-//--------------------------------
+model Alert{
+  id String @id @default(uuid())
+  name String @unique
+  reading Reading[]
+}
 
 
 //--------------------------------
-// 📌 6️⃣ Gestion de livraison de colis 📦 
-// ➡️ **Objectif** : Suivre des colis, leurs trajets, et leurs statuts.  
+// 📌 6️⃣ Package Delivery Tracking 📦  
+// ➡️ **Objective**: Track packages, their routes, and statuses.  
 
-// 🔹 **Colis** : numéro de suivi, poids, dimensions.  
-// 🔹 **Destinations** : adresse d'expédition et de réception.  
-// 🔹 **Étapes du trajet** : entrepôts ou villes traversés, date et heure du passage.  
-// 🔹 **Statuts** : en cours de traitement, en transit, livré. 
+// 🔹 **Packages**: tracking number, weight, dimensions.  
+// 🔹 **Destinations**: sender and receiver addresses.  
+// 🔹 **Route Steps**: warehouses or cities the package passes through, date and time of transit.  
+// 🔹 **Statuses**: processing, in transit, delivered.  
 //--------------------------------
+// 📌 6️⃣ Suivi de Livraison de Colis 📦
+// ➡️ Objectif : Suivre les colis, leurs trajets et leurs statuts.
+
+// 🔹 Colis : numéro de suivi, poids, dimensions.
+// 🔹 Destinations : adresses d'expédition et de réception.
+// 🔹 Étapes du trajet : entrepôts ou villes traversés, date et heure du passage.
+// 🔹 Statuts : en cours de traitement, en transit, livré.
 
 
+model Package{
+  id String @id @default(uuid())
+  trackingNumber String @unique
+  weight      Float
+  width       Float
+  height      Float
+  length      Float
+  routeStep RouteStep[]
+  destination Destination[]
+}
+model Person{
+  id String @id @default(uuid())
+  state String?
+  country String
+  city String
+  postalCode String
+  address String
+  firstName String
+  lastName String
+  sentPackages	Destination[] @relation("SenderPackages")
+  receivedPackages	Destination[] @relation("ReceiverPackages")
+}
+
+model Destination{
+  id String @id @default(uuid())
+  package Package @relation(fields: [packageId], references: [id])
+  packageId String
+  sender Person @relation("SenderPackages",fields: [senderId], references: [id])
+  senderId String
+  receiver Person @relation("ReceiverPackages",fields: [receiverId], references: [id])
+  receiverId String
+}
+
+model Warehouse{
+  id String @id @default(uuid())
+  locationName String @unique
+  city	String	
+  state	String?	
+  country	String	
+  postalCode	String?	
+  routeStep RouteStep[]
+}
+model RouteStep{
+  id String @id @default(uuid())
+  stepNumber Int
+  dateTimeArrival	DateTime	
+  dateTimeDeparture	DateTime?
+  status Status
+  package Package @relation(fields: [packageId], references: [id])
+  packageId String
+  warehouse Warehouse? @relation(fields: [warehouseId], references: [id])
+  warehouseId String?
+  city	String	
+  state	String?	
+  country	String	
+  postalCode	String?	
+}
+enum Status{
+  PROCESSING
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELAYED
+  DELIVERED
+}
